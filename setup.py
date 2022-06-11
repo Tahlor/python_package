@@ -14,16 +14,16 @@ with open('requirements.txt') as f:
     requirements = f.read().splitlines()
 print(requirements)
 
-setup(name='general_tools',
-      version='0.0.34',
-      description='General tools',
+setup(name='python_package',
+      version='0.0.35',
+      description='python_package',
       long_description= "" if not os.path.isfile("README.md") else read_md('README.md'),
       author='Taylor Archibald',
-      author_email='taylor.archibald@medic.life',
-      url='https://github.com/NewVistas/medic-data-generic',
+      author_email='taylornarchibald@gmail.com',
+      url='https://github.com/tahlor/python_package',
       setup_requires=['pytest-runner',],
       tests_require=['pytest','python-coveralls'],
-      packages=['general_tools'],
+      packages=['python_package'],
       install_requires=[
           *requirements,
       ],
