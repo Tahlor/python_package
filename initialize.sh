@@ -13,6 +13,7 @@ PACKAGE_NAME=${1:-$FILE}
 GITHUB_USER=${2:-tahlor}
 TOKEN=${3:-$GITHUB_TOKEN}
 EMAIL=${4:-taylor.archibald@byu.edu}
+PRIVATE=${5:-true}
 
 read -r -p "Package Name ($PACKAGE_NAME): " PACKAGE_NAME1
 PACKAGE_NAME=${PACKAGE_NAME1:-$PACKAGE_NAME}
@@ -33,9 +34,12 @@ rm .git -rf
 # Rename files
 #package_files=$(ls . |grep .mp4)
 
-for filename in `find . -type 'f,d' -name python_package`
+for filename in `find . -type 'f,d' -name python_package`; 
 do
-    mv "$filename" \"`echo "$filename" | sed -e "s/python_package/$PACKAGE_NAME/g"`\"
+    new_file=`echo "$filename" | sed -e "s/python_package/$PACKAGE_NAME/g"`
+    if [ "$filename" != "$new_file" ]; then
+        mv "$filename" "$new_file"
+    fi
 done
 
 # find and replace in the files
@@ -52,7 +56,7 @@ echo $TOKEN
 
 
 # initialize new git
-curl -u $GITHUB_USER:$GITHUB_TOKEN https://api.github.com/user/repos -d "{\"name\":\"$SAFE_PACKAGE_NAME\"}"
+curl -u $GITHUB_USER:$TOKEN https://api.github.com/user/repos -d "{\"name\":\"$SAFE_PACKAGE_NAME\", \"private\": $PRIVATE}"
 
 git init
 git add .
