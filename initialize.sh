@@ -43,10 +43,11 @@ do
 done
 
 # find and replace in the files
-find . -type f -name "*" -exec sed -i "s@python_package@${PACKAGE_NAME}@g" {} \;
-find . -type f -name "*" -exec sed -i "s|taylornarchibald@gmail.com|${EMAIL}|g" {} \;
-find . -type f -name "*" -exec sed -i "s@tahlor@${GITHUB_USER}@g" {} \;
-find . -type f -name "*" -exec sed -i "s@version=.*@version='0.0.1'@g" {} \;
+exclude="-not \( -path '*/initialize.sh' \)"
+find . -type f -name "*" $exclude -exec sed -i "s@python_package@${PACKAGE_NAME}@g" {} \;
+find . -type f -name "*" $exclude -exec sed -i "s|taylornarchibald@gmail.com|${EMAIL}|g" {} \;
+find . -type f -name "*" $exclude -exec sed -i "s@tahlor@${GITHUB_USER}@g" {} \;
+find . -type f -name "*" $exclude -exec sed -i "s@version=.*@version='0.0.1',@g" {} \;
 
 echo $PACKAGE_NAME
 echo $SAFE_PACKAGE_NAME

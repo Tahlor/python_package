@@ -1,4 +1,4 @@
-    #!/usr/bin/env python
+#!/usr/bin/env python
 
 from setuptools import setup
 try:
@@ -15,7 +15,7 @@ with open('requirements.txt') as f:
 print(requirements)
 
 setup(name='python_package',
-      version='0.0.36',
+      version='0.0.39',
       description='python_package',
       long_description= "" if not os.path.isfile("README.md") else read_md('README.md'),
       author='Taylor Archibald',
