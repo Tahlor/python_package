@@ -14,6 +14,7 @@ GITHUB_USER=${2:-tahlor}
 TOKEN=${3:-$GITHUB_TOKEN}
 EMAIL=${4:-taylor.archibald@byu.edu}
 PRIVATE=${5:-true}
+RECREATE=${6:-true}
 
 read -r -p "Package Name ($PACKAGE_NAME): " PACKAGE_NAME1
 PACKAGE_NAME=${PACKAGE_NAME1:-$PACKAGE_NAME}
@@ -23,18 +24,29 @@ read -r -p "GitHub Token ($TOKEN): " TOKEN1
 TOKEN=${TOKEN1:-$TOKEN}
 read -r -p "Email ($EMAIL): " EMAIL1
 EMAIL=${EMAIL1:-$EMAIL}
+read -r -p "Recreate GIT?: Y/n " RECREATE1
+RECREATE=${RECREATE1:-$RECREATE}
+
+case $RECREATE in
+    [Yy]* ) RECREATE=true;;
+    [Nn]* ) RECREATE=false;;
+    * ) echo "Unrecognized response"; RECREATE=true;;
+esac
 
 PACKAGE_NAME=`echo "$PACKAGE_NAME" | sed -E -e 's/ /-/g'`
 SAFE_PACKAGE_NAME=`echo "$PACKAGE_NAME" | sed -E -e 's/ |-/_/g'`
 
 
 # Remove old git
-rm .git -rf
+if $RECREATE; then
+    rm .git -rf
+fi;
 
 # Rename files
 #package_files=$(ls . |grep .mp4)
+exclude="-not -path 'initialize.sh' -name '.git' -prune"
 
-for filename in `find . -type 'f,d' -name python_package`; 
+for filename in `find . -type 'f,d' -name hwr_utils1 $exclude`;
 do
     new_file=`echo "$filename" | sed -e "s/python_package/$PACKAGE_NAME/g"`
     if [ "$filename" != "$new_file" ]; then
@@ -43,7 +55,6 @@ do
 done
 
 # find and replace in the files
-exclude="-not \( -path '*/initialize.sh' \)"
 find . -type f -name "*" $exclude -exec sed -i "s@python_package@${PACKAGE_NAME}@g" {} \;
 find . -type f -name "*" $exclude -exec sed -i "s|taylornarchibald@gmail.com|${EMAIL}|g" {} \;
 find . -type f -name "*" $exclude -exec sed -i "s@tahlor@${GITHUB_USER}@g" {} \;
@@ -55,15 +66,16 @@ echo $GITHUB_USER
 echo $EMAIL
 echo $TOKEN
 
+if $RECREATE; then
+    # initialize new git
+    curl -u $GITHUB_USER:$TOKEN https://api.github.com/user/repos -d "{\"name\":\"$SAFE_PACKAGE_NAME\", \"private\": $PRIVATE}"
 
-# initialize new git
-curl -u $GITHUB_USER:$TOKEN https://api.github.com/user/repos -d "{\"name\":\"$SAFE_PACKAGE_NAME\", \"private\": $PRIVATE}"
-
-git init
-git add .
-git commit -m "first commit"
-git branch -M master
-git remote add origin git@github.com:$GITHUB_USER/${SAFE_PACKAGE_NAME}.git
-git push -u origin master
-#git push --set-upstream origin master
-
+    git init
+    git add .
+    git commit -m "first commit"
+    git branch -M master
+    git remote add origin git@github.com:$GITHUB_USER/${SAFE_PACKAGE_NAME}.git
+    # Force push master in case it was recreated
+    git push -uf origin master
+    #git push --set-upstream origin master
+fi
