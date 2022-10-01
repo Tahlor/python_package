@@ -10,11 +10,12 @@ FILE="$(basename "${SCRIPT_DIR}")"
 echo $FILE
 
 PACKAGE_NAME=${1:-$FILE}
-GITHUB_USER=${2:-tahlor}
-TOKEN=${3:-$GITHUB_TOKEN}
-EMAIL=${4:-taylor.archibald@byu.edu}
-PRIVATE=${5:-true}
-RECREATE=${6:-true}
+OLD_PACKAGE_NAME=${2:-python_package}
+GITHUB_USER=${3:-tahlor}
+TOKEN=${4:-$GITHUB_TOKEN}
+EMAIL=${5:-taylor.archibald@byu.edu}
+PRIVATE=${6:-true}
+RECREATE=${7:-true}
 
 read -r -p "Package Name ($PACKAGE_NAME): " PACKAGE_NAME1
 PACKAGE_NAME=${PACKAGE_NAME1:-$PACKAGE_NAME}
@@ -44,18 +45,19 @@ fi;
 
 # Rename files
 #package_files=$(ls . |grep .mp4)
-exclude="-not -path 'initialize.sh' -name '.git' -prune"
+exclude_git='-not -path *.git*'
+exclude='-not -path *.git* -not -path *./initialize.sh'
 
-for filename in `find . -type 'f,d' -name hwr_utils1 $exclude`;
+for filename in `find . -type 'f,d' -name $OLD_PACKAGE_NAME $exclude_git`;
 do
-    new_file=`echo "$filename" | sed -e "s/python_package/$PACKAGE_NAME/g"`
+    new_file=`echo "$filename" | sed -e "s/${OLD_PACKAGE_NAME}/$PACKAGE_NAME/g"`
     if [ "$filename" != "$new_file" ]; then
         mv "$filename" "$new_file"
     fi
 done
 
 # find and replace in the files
-find . -type f -name "*" $exclude -exec sed -i "s@python_package@${PACKAGE_NAME}@g" {} \;
+find . -type f -name "*" $exclude_git -exec sed -i "s@${OLD_PACKAGE_NAME}@${PACKAGE_NAME}@g" {} \;
 find . -type f -name "*" $exclude -exec sed -i "s|taylornarchibald@gmail.com|${EMAIL}|g" {} \;
 find . -type f -name "*" $exclude -exec sed -i "s@tahlor@${GITHUB_USER}@g" {} \;
 find . -type f -name "*" $exclude -exec sed -i "s@version=.*@version='0.0.1',@g" {} \;
