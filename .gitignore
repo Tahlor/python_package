@@ -3,21 +3,27 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+temp/
 password*
 credentials*
 *credentials*
 *.swp
+*deprecated/
 
 # C extensions
 *.so
 
+# Maybe
+# downloads/
+# data/
+
 # Distribution / packaging
 .Python
+venv/
 env/
 build/
 develop-eggs/
 dist/
-downloads/
 eggs/
 .eggs/
 lib/
@@ -39,7 +45,7 @@ var/
 pip-log.txt
 pip-delete-this-directory.txt
 
-# Unit test / coverage reports
+# Unit unit_tests / coverage reports
 htmlcov/
 .tox/
 .coverage
